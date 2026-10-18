@@ -2,12 +2,6 @@
 title: Quarto reveal.js UoE Theme
 subtitle: An elegant presentation theme in University of Edinburgh colours
 
-format: 
-  metropolis-beamer-revealjs: default
-    # theme: style.scss
-header-logo: images/rstudio.png
-header-logo-link: "https://posit.co/"
-slide-number: "c"
 author:
   - name: Author X
     orcid: 0000-0000-0000-0000
