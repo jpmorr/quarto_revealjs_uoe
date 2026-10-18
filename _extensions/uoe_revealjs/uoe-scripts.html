@@ -1,0 +1,301 @@
+<script>
+// Function to apply custom colors to menu and chalkboard buttons
+function applyCustomMenuStyles() {
+  // 1. Read the color variables from the CSS
+  const rootStyles = getComputedStyle(document.documentElement);
+  const normalColor = rootStyles.getPropertyValue('--theme-secondary-color').trim();
+  const hoverColor = rootStyles.getPropertyValue('--theme-hover-color').trim();
+
+  if (!normalColor || !hoverColor) {
+    console.error("[uoe] could not read theme CSS variables.");
+    return;
+  }
+
+  // 2. Create colored versions of the original SVGs
+  const createMenuSVG = (color) => {
+    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${color}" class="bi bi-list" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>`;
+    return `url('data:image/svg+xml,${encodeURIComponent(svgContent)}')`;
+  };
+
+  const createEaselSVG = (color) => {
+    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${color}" class="bi bi-easel2" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0a.5.5 0 0 1 .447.276L8.81 1h4.69A1.5 1.5 0 0 1 15 2.5V11h.5a.5.5 0 0 1 0 1h-2.86l.845 3.379a.5.5 0 0 1-.97.242L12.11 14H3.89l-.405 1.621a.5.5 0 0 1-.97-.242L3.36 12H.5a.5.5 0 0 1 0-1H1V2.5A1.5 1.5 0 0 1 2.5 1h4.691l.362-.724A.5.5 0 0 1 8 0ZM2 11h12V2.5a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5V11Zm9.61 1H4.39l-.25 1h7.72l-.25-1Z"/></svg>`;
+    return `url('data:image/svg+xml,${encodeURIComponent(svgContent)}')`;
+  };
+
+  const createBrushSVG = (color) => {
+    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="${color}" class="bi bi-brush" viewBox="0 0 16 16"><path d="M15.825.12a.5.5 0 0 1 .132.584c-1.53 3.43-4.743 8.17-7.095 10.64a6.067 6.067 0 0 1-2.373 1.534c-.018.227-.06.538-.16.868-.201.659-.667 1.479-1.708 1.74a8.118 8.118 0 0 1-3.078.132 3.659 3.659 0 0 1-.562-.135 1.382 1.382 0 0 1-.466-.247.714.714 0 0 1-.204-.288.622.622 0 0 1 .004-.443c.095-.245.316-.38.461-.452.394-.197.625-.453.867-.826.095-.144.184-.297.287-.472l.117-.198c.151-.255.326-.54.546-.848.528-.739 1.201-.925 1.746-.896.126.007.243.025.348.048.062-.172.142-.38.238-.608.261-.619.658-1.419 1.187-2.069 2.176-2.67 6.18-6.206 9.117-8.104a.5.5 0 0 1 .596.04zM4.705 11.912a1.23 1.23 0 0 0-.419-.1c-.246-.013-.573.05-.879.479-.197.275-.355.532-.5.777l-.105.177c-.106.181-.213.362-.32.528a3.39 3.39 0 0 1-.76.861c.69.112 1.736.111 2.657-.12.559-.139.843-.569.993-1.06a3.122 3.122 0 0 0 .126-.75l-.793-.792zm1.44.026c.12-.04.277-.1.458-.183a5.068 5.068 0 0 0 1.535-1.1c1.9-1.996 4.412-5.57 6.052-8.631-2.59 1.927-5.566 4.66-7.302 6.792-.442.543-.795 1.243-1.042 1.826-.121.288-.214.54-.275.72v.001l.575.575zm-4.973 3.04.007-.005a.031.031 0 0 1-.007.004zm3.582-3.043.002.001h-.002z"/></svg>`;
+    return `url('data:image/svg+xml,${encodeURIComponent(svgContent)}')`;
+  };
+
+  // 3. Create CSS rules using the exact original icons with new colors
+  const customCSS = `
+    /* Menu button styling - keep working as is */
+    body .reveal .slide-menu-button .fa-bars::before,
+    body .reveal .slide-menu-button a i.fa-bars::before {
+      background-image: ${createMenuSVG(normalColor)} !important;
+      color: transparent !important;
+    }
+
+    body .reveal .slide-menu-button a:hover .fa-bars::before,
+    body .reveal .slide-menu-button a:hover i.fa-bars::before {
+      background-image: ${createMenuSVG(hoverColor)} !important;
+      color: transparent !important;
+    }
+
+    /* Add CSS custom properties for chalkboard buttons like menu button has */
+    .reveal .slide-chalkboard-buttons a {
+      --r-link-color: ${normalColor};
+      --r-link-color-hover: ${hoverColor};
+      color: ${normalColor} !important;
+    }
+
+    /* Chalkboard easel button - maximum specificity */
+    html body .reveal .slide-chalkboard-buttons .fa-easel2::before,
+    html body .reveal .slide-chalkboard-buttons a i.fa-easel2::before,
+    html body .reveal .slide-chalkboard-buttons .fas.fa-easel2::before {
+      background-image: ${createEaselSVG(normalColor)} !important;
+      color: transparent !important;
+    }
+
+    html body .reveal .slide-chalkboard-buttons a:hover .fa-easel2::before,
+    html body .reveal .slide-chalkboard-buttons a:hover i.fa-easel2::before,
+    html body .reveal .slide-chalkboard-buttons a:hover .fas.fa-easel2::before {
+      background-image: ${createEaselSVG(hoverColor)} !important;
+      color: transparent !important;
+    }
+
+    /* Chalkboard brush button - maximum specificity */
+    html body .reveal .slide-chalkboard-buttons .fa-brush::before,
+    html body .reveal .slide-chalkboard-buttons a i.fa-brush::before,
+    html body .reveal .slide-chalkboard-buttons .fas.fa-brush::before {
+      background-image: ${createBrushSVG(normalColor)} !important;
+      color: transparent !important;
+    }
+
+    html body .reveal .slide-chalkboard-buttons a:hover .fa-brush::before,
+    html body .reveal .slide-chalkboard-buttons a:hover i.fa-brush::before,
+    html body .reveal .slide-chalkboard-buttons a:hover .fas.fa-brush::before {
+      background-image: ${createBrushSVG(hoverColor)} !important;
+      color: transparent !important;
+    }
+
+    /* Force hover with data attribute approach */
+    html body .reveal .slide-chalkboard-buttons a[data-hover="true"] .fa-easel2::before,
+    html body .reveal .slide-chalkboard-buttons a[data-hover="true"] i.fa-easel2::before {
+      background-image: ${createEaselSVG(hoverColor)} !important;
+    }
+
+    html body .reveal .slide-chalkboard-buttons a[data-hover="true"] .fa-brush::before,
+    html body .reveal .slide-chalkboard-buttons a[data-hover="true"] i.fa-brush::before {
+      background-image: ${createBrushSVG(hoverColor)} !important;
+    }
+  `;
+
+  // 4. Inject the CSS into the document head
+  const styleElement = document.createElement('style');
+  styleElement.setAttribute('data-custom-menu-styles', 'true');
+  styleElement.textContent = customCSS;
+  document.head.appendChild(styleElement);
+
+  // 5. Add JavaScript event listeners as backup for chalkboard buttons
+  const chalkboardButtons = document.querySelectorAll('.slide-chalkboard-buttons a');
+  chalkboardButtons.forEach(button => {
+    button.addEventListener('mouseenter', () => {
+      button.setAttribute('data-hover', 'true');
+    });
+    
+    button.addEventListener('mouseleave', () => {
+      button.removeAttribute('data-hover');
+    });
+  });
+
+}
+
+// ---------------------------------------------------------------------------
+// Layout sync
+// Reveal scales the 1920x1080 slide box to fit the window. Window-fixed
+// elements (logo, footer, slide number) need to know that scale, so publish it
+// as CSS variables:
+//   --uoe-scale : current slide scale
+//   --uoe-x     : gap between the window edge and the slide box (wide windows)
+// We also pin the slide box to the top of the window. Reveal centres it
+// vertically, which on taller-than-16:9 windows (4:3 projectors, iPads) would
+// push the title bar down and leave a fat blue band above it. Delete the
+// `slides.style.top`/`bottom` lines below if you prefer Reveal's centring.
+//
+// Reveal positions the slide box one of two ways, and switches between them
+// live: normally via `transform: translate(-50%,-50%) scale(s)`, but whenever
+// the scale works out to exactly 1 (a screen that happens to match the
+// 1920x1080 design size - a common case, including fullscreen on a 1080p or
+// a 1920x1200 display) it clears the transform entirely and centres with
+// plain top/bottom/left/right instead. The two need different `top` values,
+// so we check which one is active rather than assuming the usual case.
+// ---------------------------------------------------------------------------
+function syncUoeLayout() {
+  if (typeof Reveal === 'undefined' || !Reveal.isReady()) return;
+  const root = document.documentElement;
+  const cfg = Reveal.getConfig();
+  const printing = Reveal.isPrintingPDF && Reveal.isPrintingPDF();
+  const scale = printing ? 1 : Reveal.getScale();
+
+  if (!printing && !Reveal.isOverview() && !cfg.disableLayout &&
+      typeof cfg.height === 'number') {
+    const slides = Reveal.getSlidesElement();
+    const usesTransform = getComputedStyle(slides).transform !== 'none';
+    const top = usesTransform ? (cfg.height * scale / 2) + 'px' : '0px';
+    if (slides.style.top !== top) slides.style.top = top;
+    // Letting `bottom` stay at Reveal's own default (0, from reveal.css)
+    // combines with `margin: auto` to centre the box vertically again,
+    // undoing the top-anchor above - needed in the no-transform case, and
+    // harmless in the transform case (Reveal already sets it to 'auto' there).
+    if (slides.style.bottom !== 'auto') slides.style.bottom = 'auto';
+  }
+
+  const boxWidth = (typeof cfg.width === 'number' ? cfg.width : root.clientWidth) * scale;
+  const x = printing ? 0 : Math.max(0, (root.clientWidth - boxWidth) / 2);
+  root.style.setProperty('--uoe-scale', scale);
+  root.style.setProperty('--uoe-x', x + 'px');
+}
+
+function initUoe() {
+  applyCustomMenuStyles();
+  syncUoeLayout();
+  Reveal.on('resize', syncUoeLayout);
+  Reveal.on('overviewhidden', syncUoeLayout);
+  // Reveal re-runs its layout at various moments (some without a 'resize'
+  // event) and resets `top`, so watch the element and re-assert our anchor.
+  // Overview lays its grid out around top:50%, so undo our anchor while it is open.
+  Reveal.on('overviewshown', function () { Reveal.getSlidesElement().style.top = '50%'; });
+  new MutationObserver(syncUoeLayout).observe(Reveal.getSlidesElement(),
+    { attributes: true, attributeFilter: ['style'] });
+
+  applyUoeTitleStyle();
+  renderUoeQrcode();
+}
+
+// ---------------------------------------------------------------------------
+// Title slide: style class + QR code
+// title-slide.lua sets window.uoeTitleStyle / window.uoeQrcode from YAML
+// (title-style:, qrcode:, ...) - applied here, at runtime, because the title
+// slide's own markup is generated by Quarto's template rather than written
+// by hand, so there's no element for a Lua filter to attach a class to
+// directly. Both are harmless no-ops when the title slide isn't present
+// (e.g. a deck rendered without one) or when the options weren't set.
+// ---------------------------------------------------------------------------
+function applyUoeTitleStyle() {
+  var titleSlide = document.getElementById('title-slide');
+  if (!titleSlide) return;
+
+  renderUoeEvent(titleSlide);
+
+  if (!window.uoeTitleStyle || window.uoeTitleStyle === 'plain') return;
+
+  if (window.uoeTitleStyle === 'watermark') {
+    // `title-watermark-image:`, if set, is used as given (a path relative to
+    // the page, same as any other image reference in the .qmd). With no
+    // override, title-slide.lua ships a placeholder with the theme itself
+    // (window.uoeTitleWatermarkDefault) so the watermark has something to
+    // show without depending on `logo:` being set at all.
+    //
+    // The image is set on a real element's own inline style, not a CSS
+    // variable: a url() inside a custom property value resolves against
+    // whichever stylesheet ends up consuming the variable, not against
+    // wherever the variable was set from - so a page-relative path set that
+    // way would still end up resolved against the compiled CSS file's own
+    // location instead (see uoe.scss for the fuller version of this).
+    var url = window.uoeTitleWatermarkImage || window.uoeTitleWatermarkDefault;
+    if (url && !document.getElementById('uoe-watermark')) {
+      var mark = document.createElement('div');
+      mark.id = 'uoe-watermark';
+      mark.style.backgroundImage = 'url("' + url + '")';
+      // size/vpos are plain numbers (a percentage); opacity and inset are
+      // used exactly as given, since inset is a full CSS length (e.g.
+      // "70px" or "5%") and opacity is unitless.
+      if (window.uoeTitleWatermarkSize) mark.style.width = window.uoeTitleWatermarkSize + '%';
+      if (window.uoeTitleWatermarkVpos) mark.style.top = window.uoeTitleWatermarkVpos + '%';
+      if (window.uoeTitleWatermarkOpacity) mark.style.opacity = window.uoeTitleWatermarkOpacity;
+      if (window.uoeTitleWatermarkInset) mark.style.right = window.uoeTitleWatermarkInset;
+      titleSlide.appendChild(mark);
+    } else if (!url) {
+      return;
+    }
+  }
+
+  titleSlide.classList.add('uoe-title-' + window.uoeTitleStyle);
+}
+
+// `event:` has no equivalent in Quarto's own title-block template (unlike
+// title/subtitle/author/date, which are already elements in the page), so
+// it's inserted here rather than styled with CSS alone - same reasoning as
+// the QR code box below.
+function renderUoeEvent(titleSlide) {
+  if (!window.uoeEvent || document.getElementById('uoe-event')) return;
+  var dateEl = titleSlide.querySelector('.date');
+  var el = document.createElement('p');
+  el.id = 'uoe-event';
+  el.textContent = window.uoeEvent;
+  if (dateEl && dateEl.parentNode) {
+    dateEl.parentNode.insertBefore(el, dateEl);
+  } else {
+    titleSlide.appendChild(el);
+  }
+}
+
+function renderUoeQrcode(attempt) {
+  attempt = attempt || 0;
+  if (!window.uoeQrcode) return;
+  var titleSlide = document.getElementById('title-slide');
+  if (!titleSlide || document.getElementById('uoe-qrcode-box')) return;
+
+  // qrcode.min.js is added as a separate HTML dependency and may not have
+  // finished loading yet (it's only ever added when qrcode: is set, so this
+  // is never a long wait in practice) - retry briefly rather than assume
+  // load order, which Quarto doesn't guarantee between dependencies and
+  // this theme's own include-after-body script.
+  if (typeof qrcode === 'undefined') {
+    if (attempt < 20) setTimeout(function () { renderUoeQrcode(attempt + 1); }, 50);
+    else console.error('[uoe] qrcode.min.js did not load - QR code not shown.');
+    return;
+  }
+
+  var cfg = window.uoeQrcode;
+  var qr = qrcode(0, 'M'); // type 0 = auto-detect the smallest size for the data
+  qr.addData(cfg.url);
+  qr.make();
+
+  var box = document.createElement('div');
+  box.id = 'uoe-qrcode-box';
+  if (cfg.size) box.style.width = cfg.size + 'px';
+  // Offsets nudge the box from its default position (see uoe.scss) rather
+  // than replace it, via CSS custom properties consumed in a calc() there -
+  // plain lengths, not url()s, so the custom-property/stylesheet-resolution
+  // gotcha noted elsewhere in this file for the watermark image doesn't
+  // apply here.
+  if (cfg.offsetX) box.style.setProperty('--uoe-qrcode-offset-x', cfg.offsetX);
+  if (cfg.offsetY) box.style.setProperty('--uoe-qrcode-offset-y', cfg.offsetY);
+  box.innerHTML = qr.createSvgTag({ scalable: true, margin: 1 });
+  if (cfg.caption) {
+    var cap = document.createElement('div');
+    cap.className = 'uoe-qrcode-caption';
+    cap.textContent = cfg.caption;
+    box.appendChild(cap);
+  }
+  titleSlide.appendChild(box);
+}
+
+function waitForReveal() {
+  if (typeof Reveal === 'undefined') {
+    setTimeout(waitForReveal, 100);
+  } else if (Reveal.isReady()) {
+    initUoe();
+  } else {
+    Reveal.on('ready', initUoe);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', waitForReveal);
+} else {
+  waitForReveal();
+}
+</script>

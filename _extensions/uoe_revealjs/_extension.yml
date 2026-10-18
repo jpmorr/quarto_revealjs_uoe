@@ -1,0 +1,59 @@
+title: uoe
+author: J.P. Morrissey
+version: 0.2.0
+quarto-required: ">=1.3.0"
+
+contributes:
+  formats:
+    revealjs:
+      theme: [default, uoe.scss]
+      filters:
+        - footer-logo.lua
+        - references-slide.lua
+        - columns.lua
+        - title-slide.lua
+
+      # Design space that Reveal scales to fit the window. The theme's px
+      # values (title bar height etc.) are all defined in this space.
+      width: 1920
+      height: 1080
+      # Reveal's default leaves 10% of the window empty around the slides;
+      # the theme draws its own padding, so remove it.
+      margin: 0
+
+      menu:
+        side: left
+      slide-number: true
+      history: false
+      date-format: long
+      html-math-method: mathjax
+
+      # University logos are fixed by the theme (files in img/); the only
+      # options are these on/off switches. Set either to false in a document's
+      # YAML to hide that logo.
+      show-top-logo: true
+      show-footer-logo: true
+      logo: "img/uoe_no_bg_logo.png"
+      footer-logo: "img/uoe_soe_graned.png"
+      footer-logo-link: "https://www.eng.ed.ac.uk"
+
+      format-resources:
+        - img/logo_granular_def.jpg
+        - img/logo_granular_def_sm.jpg
+        - img/uoe_soe_graned.png
+        - img/uoe_no_bg_logo.png
+        - img/uoe_navy_bg.png
+        - img/UoE_Centred Logo_CMYK_roundel.png
+        - img/cc-by.png
+
+      # Scripts are inlined from a file, so nothing depends on the folder
+      # name the extension is installed under.
+      include-after-body:
+        - file: uoe-scripts.html
+
+      include-in-header:
+        - text: |
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Fira+Sans:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:ital,wght@0,400;0,600;1,400&family=Fira+Code:wght@400;600&display=swap">
+            <link rel="shortcut icon" href="_extensions/jpmorr/uoe/img/logo_granular_def_sm.jpg">

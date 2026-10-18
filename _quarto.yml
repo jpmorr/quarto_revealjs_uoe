@@ -1,0 +1,35 @@
+project:
+  title: "Presentation"
+
+format:
+  uoe-revealjs:
+    chalkboard:
+      theme: whiteboard
+      boardmarker-width: 5
+      buttons: true
+    navigation-mode: vertical
+    controls-layout: bottom-right
+    reference-location: block
+    incremental: true  
+    transition: slide
+    transition-speed: default
+    slide-number: c
+    references-slide: false
+    footer: "'Life is like a box of chocolates'"
+
+    footer-text: "© 2025- J.P. Morrissey | Talk: revealjs demo | Location: Edinburgh"
+    footer-link: "https://slides.example.com"
+    footer-link-text: "View Online"
+    footer-license: "https://creativecommons.org/licenses/by/4.0/"
+    footer-license-text: "CC BY 4.0"
+
+    # title-style: [plain , colour, watermark]
+    title-style: colour 
+    # title-watermark-image: "images/UoE_Centred Logo_CMYK_roundel.png"
+
+    qrcode: "https://example.com/slides"
+    qrcode-caption: "Scan for slides"      # optional
+    qrcode-size: 150                       # optional, design-px
+
+    # include-in-header:
+      # - file: gtag.html

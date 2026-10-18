@@ -1,0 +1,1880 @@
+/*
+  UoE reveal.js theme
+  -------------------
+  LAYOUT MODEL (read this before editing!)
+  Reveal.js lays every deck out in a fixed "design space" (here 1920x1080)
+  and then scales that whole box with a CSS transform to fit the window.
+  Never override `position`, `transform`, `left/top` or `width/height` on
+  `.reveal .slides` or `.reveal .slides > section` - Reveal owns those.
+  Everything that should scale with the slides (the title bar, the slide
+  titles, the content padding) is therefore written in plain px *inside*
+  the design space. The few things that must stay glued to the window
+  (footer, slide number, logo) use ui() below, which multiplies by
+  --uoe-scale, a CSS variable kept up to date by the script in
+  uoe-scripts.html.
+
+  Fonts are loaded by a <link> in _extension.yml (not @import here).
+*/
+
+/*-- scss:defaults --*/
+
+// ==============================================================================
+// COLOUR SYSTEM - three layers
+//   1. Raw palettes    what colours exist (University, Engineering, TUSAIL,
+//                      plus the shared neutral). Just data, never used directly
+//                      by rules except the legacy named classes.
+//   2. Theme roles     which palette colours play primary / secondary /
+//                      tertiary / alt, the neutral, and 5 text highlights.
+//   3. Component roles which role each part of the design uses (title bar,
+//                      bar line, slide-number tab, links, ...).
+// To re-colour the theme, override layer 2 (usually enough) or layer 3 (to
+// re-wire a component) from a second SCSS file - see variants/README.md.
+// ==============================================================================
+
+// -- 1. Raw palettes -------------------------------------------------------------
+$jet: #1b1c1d;
+$white: #fff;
+
+// University of Edinburgh
+$university_blue: #041E42 !default;
+$university_red: #D50032 !default;
+$university_purple: #830065 !default;
+$university_burgundy: #A50034 !default;
+$university_spruce_grey: #333F48 !default;
+$university_jade: #487A7B !default;
+
+$university_bright_blue: #007288 !default;
+$university_bright_pink: #D0006F !default;
+$university_bright_red: #AD033B !default;
+$university_bright_yellow: #F9A800 !default;
+
+$university_dark_green: #154734 !default;
+$university_muted_blue: #004F71 !default;
+$university_muted_brown: #6D4F47 !default;
+
+// School of Engineering
+$eng_blue: #174f72 !default;
+$eng_green: #17472f !default;
+$eng_yellow: #ecab00 !default;
+$eng_teal: #4d7f84 !default;
+$eng_lightgreen: #a09d05 !default;
+
+// Shared by all three (the granular group's neutral)
+$granular_grey: #c4ccd9 !default;
+
+// TUSAIL
+$tusail-blue: #344e9a;
+$tusail-green: #4db05b;
+$tusail-pink: #e71e72;
+$tusail-cyan: #3fa2db;
+
+$right-arrow: "\2192";
+$whitecircle: "\25cb";
+
+// -- Fonts -------------------------------------------------------------------
+$font-family-sans-serif: "Roboto", "Fira Sans", "Helvetica Neue", Arial, sans-serif !default;
+$font-family-monospace: "JetBrains Mono", "Fira Code", "Roboto Mono", monospace !default;
+$presentation-heading-font: "Roboto", "Helvetica Neue", Arial, sans-serif !default;
+
+$presentation-heading-color: $jet !default;
+$presentation-heading-font-weight: 600 !default;
+
+$presentation-font-size-root: 30pt !default;
+$presentation-h1-font-size: 2.75em !default;
+$presentation-h2-font-size: 2.55em !default;
+$presentation-h3-font-size: 1.4em !default;
+$presentation-h4-font-size: 1.1em !default;
+$presentation-font-smaller: 0.7 !default;
+$presentation-line-height: 1.3 !default;
+$presentation-title-slide-text-align: left !default;
+$presentation-slide-text-align: left !default;
+$code-block-font-size: 0.60em !default;
+
+$h12-font-weight: 550 !default;
+$h36-font-weight: 400 !default;
+$cell-code-font-weight: normal !default;
+$body-font-weight: 350 !default;
+
+$titleSlide-line: solid !default;
+$authors-block-gap: 2em !default;
+
+// -- 2. Theme roles ----------------------------------------------------------------
+// University of Edinburgh assignment. A variant redefines these.
+$primary-color: $university_blue !default;
+$secondary-color: $university_red !default;
+$tertiary-color: $university_bright_blue !default;
+$alt-color: $primary-color !default; // title-bar background
+$neutral-color: $granular_grey !default;
+
+// Text highlights: five slots, used by .hl-1 ... .hl-5 (text) and
+// .hl-1-bg ... .hl-5-bg (filled). The -fg values are the text colour on a fill.
+$highlight-1: $primary-color !default;
+$highlight-2: $secondary-color !default;
+$highlight-3: $tertiary-color !default;
+$highlight-4: $university_dark_green !default;
+$highlight-5: $university_bright_yellow !default;
+$highlight-fg-1: $white !default;
+$highlight-fg-2: $white !default;
+$highlight-fg-3: $white !default;
+$highlight-fg-4: $white !default;
+$highlight-fg-5: $jet !default;
+
+$body-fg-color: #33474b !default;
+$alert-color: $university_burgundy !default;
+$example-color: $highlight-4 !default;
+$dark-bg-code-color: $example-color !default; // read by Quarto (code on dark slides)
+$hover-color: $highlight-5 !default; // link / icon hover
+
+// -- 3. Component roles ----------------------------------------------------------
+$bar-bg: $alt-color !default; // title bar
+$bar-line-color: $secondary-color !default; // line under the title bar
+$number-tab-bg: $primary-color !default; // slide-number tab
+$number-tab-line: $secondary-color !default;
+$progress-bg: $primary-color !default; // progress bar (unfilled)
+$progress-fg: $secondary-color !default; // progress bar (filled)
+$quote-line-color: $secondary-color !default; // blockquote rule
+$overview-outline-color: $secondary-color !default; // current slide in overview
+$link-visited-color: $university_muted_blue !default;
+
+// Aliases kept for older rules: h3, lists, buttons follow primary; h4 secondary.
+$accent: $primary-color !default;
+$accent2: $secondary-color !default;
+
+// Read by Quarto's own reveal.js styles
+$body-bg: #ffffff !default;
+$body-color: $body-fg-color !default;
+$link-color: $tertiary-color !default;
+$link-color-hover: $hover-color !default;
+$selection-bg: #26351c !default;
+
+// -- Layout constants (all in the 1920x1080 design space) ------------------------
+$bar-height: 119px !default; // blue part of the title bar
+$bar-stripe: 6px !default; // red stripe under it
+$bar-total: $bar-height + $bar-stripe;
+$slide-pad-x: 50px !default; // left/right padding of every slide
+$content-top: 150px !default; // where content starts, below the bar
+$bar-title-scale: 1.4 !default; // slide-title size inside the bar, x the root font size
+$logo-reserve: 260px !default; // right-hand space kept free for the logo
+$progress-height: 1.5vh !default; // Reveal progress bar; footers sit above it
+
+// ui(): a length that scales with the slides but is used on window-fixed
+// elements (which Reveal does not transform).
+@function ui($px) {
+  @return calc(#{$px} * var(--uoe-scale, 1));
+}
+
+/*-- scss:rules --*/
+
+// CSS variables read by custom.js (icon colouring)
+:root {
+  --theme-primary-color: #{$primary-color};
+  --theme-secondary-color: #{$secondary-color};
+  --theme-hover-color: #{$hover-color};
+  --theme-link-color: #{$link-color};
+}
+
+.alerted_text {
+  color: $alert-color;
+}
+
+.example_text {
+  color: $example-color;
+}
+
+.grey_text {
+  color: $neutral-color;
+}
+
+.grey_bold {
+  color: $neutral-color;
+  font-weight: bold;
+}
+
+.red_bold {
+  color: $university_red;
+  font-weight: bold;
+}
+
+.gold_bold {
+  color: $university_bright_yellow;
+  font-weight: bold;
+}
+
+.navy_bold {
+  color: $university_blue;
+  font-weight: bold;
+}
+
+.dark_green_bold {
+  color: $university_dark_green;
+  font-weight: bold;
+}
+
+.green_bold {
+  color: $university_bright_blue;
+  font-weight: bold;
+}
+
+.blue_bold {
+  color: $university_muted_blue;
+  font-weight: bold;
+}
+
+.light_blue_bold {
+  color: $tusail-cyan;
+  font-weight: bold;
+}
+
+// Background text fill
+
+.uoebluebg {
+  color: $white;
+  background-color: $university_blue;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.uoeredbg {
+  color: $white;
+  background-color: $university_red;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.uoedyellowbg {
+  background-color: $university_bright_yellow;
+  padding: 0.1em;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.uoegreenbg {
+  background-color: $university_dark_green;
+  color: $granular_grey;
+  padding: 0.1em;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+.uoetealbg {
+  background-color: $university_bright_blue;
+  color: $granular_grey;
+  padding: 0.1em;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+// == Glass text boxes ==========================================================
+// A floating text box, for use with {.absolute left=".." top=".."} (size and
+// position are per-use; the look is one class):
+//
+//   ::: {.glass .absolute left="55%" top="55%"}
+//   Be brave
+//   :::
+//
+// `.glass` is a soft, near-white blur - it reads well floated over a photo,
+// but all but disappears on a plain white slide. `.glass-primary` and
+// `.glass-secondary` are tinted, for use on plain/white backgrounds (or to
+// match the deck's colours over a photo). All three follow the active
+// palette, including in a colour variant.
+.reveal .glass,
+.reveal .glass-primary,
+.reveal .glass-secondary {
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  font-size: 1.8em;
+  line-height: 1.3;
+}
+
+.reveal .glass {
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.5);
+  color: $jet;
+}
+
+.reveal .glass-primary {
+  background-color: rgba($primary-color, 0.78);
+  box-shadow: 0 0 1rem 0 rgba($primary-color, 0.45);
+  color: $white;
+}
+
+.reveal .glass-secondary {
+  background-color: rgba($secondary-color, 0.78);
+  box-shadow: 0 0 1rem 0 rgba($secondary-color, 0.45);
+  color: $white;
+}
+
+// == Paper card slides ===========================================================
+// ## Heading {.paper}                 slide as a card floating on the background
+// ## Heading {.paper .paper-accent}   + a coloured top edge and a heavier shadow,
+//                                      for use on a bright/full slide background
+//                                      (set e.g. {background-color="$secondary-color"}
+//                                      - or any colour - on the slide)
+// No title bar on a .paper slide; the heading renders as normal body text.
+$paper-bg: #fdfcfa !default;
+$paper-radius: 4px !default;
+$paper-pad: 40px !default;
+
+.reveal .slides section.paper {
+  box-sizing: border-box !important;
+  width: 92% !important;
+  height: 84% !important;
+  max-height: 84% !important;
+  left: 4% !important;
+  top: 6% !important;
+  padding: $paper-pad !important;
+  border-radius: $paper-radius;
+  overflow: hidden;
+  background-color: $paper-bg;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 16px 48px rgba(0, 0, 0, 0.1);
+}
+
+.reveal .slides section.paper.paper-accent {
+  border-top: 8px solid $secondary-color;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.25),
+    0 10px 28px rgba(0, 0, 0, 0.35),
+    0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+// A .paper card is always light, whatever colour the slide behind it is, but
+// Quarto auto-detects the slide's own background luminance and forces white
+// text (`.has-dark-background`) for the whole slide. Put normal text colours
+// back inside the card; .hl-*, links etc keep working since they set their
+// own colour on the element itself.
+.reveal .slides section.paper,
+.reveal .slides section.paper h1,
+.reveal .slides section.paper h2,
+.reveal .slides section.paper h3,
+.reveal .slides section.paper h4,
+.reveal .slides section.paper h5,
+.reveal .slides section.paper h6,
+.reveal .slides section.split-paper>:not(:is(h1, h2):first-child) {
+  color: $body-fg-color !important;
+}
+
+.reveal .slides section.paper a,
+.reveal .slides section.split-paper>:not(:is(h1, h2):first-child) a {
+  color: $link-color !important;
+}
+
+// == Split slides =================================================================
+// An alternative to the title bar: a full-height colour panel down one side
+// carrying the title, in place of the bar across the top. Works bare (no
+// body content) as a section divider.
+//
+//   ## Section title {.split}                     30% panel, left, primary colour
+//   ## Section title {.split .split-right}        panel on the right
+//   ## Section title {.split .split-wide}         panel widened to 70%
+//   ## Section title {.split .split-secondary}     panel colour: secondary
+//                                                  (also .split-tertiary, .split-alt)
+$split-width: 30% !default;
+$split-pad: 70px !default;
+$split-tint-opacity: 0.07 !default; // .split-tint content-area background
+$split-card-inset: 100px !default;  // gap around the card in .split-paper - sized to clear
+                                     // the slide-number tab (right) and the footer (bottom)
+
+.reveal .slides section.split {
+  box-sizing: border-box;
+  // Section dividers (# Heading {.split}) have little or no body content, so
+  // the section would otherwise only be as tall as its text; force it to
+  // fill the slide so the colour panel always reaches top and bottom.
+  height: 100% !important;
+
+  // The panel bleeds 10000px past the slide's own edges (top, bottom, and
+  // whichever side it sits on), clipped only by .reveal{overflow:hidden} -
+  // exactly the title bar's trick. Without this the panel is confined to
+  // the slide's own design-space box, so on a window whose aspect ratio
+  // doesn't match 16:9 (Reveal then letterboxes the slide top/bottom or
+  // left/right) a visible gap of plain background shows beyond the panel's
+  // hard edge. The inner edge, which borders the content area, stays
+  // pinned to the slide's own width in design-space units, so it doesn't
+  // drift with the bleed.
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    top: -10000px;
+    bottom: -10000px;
+    left: -10000px;
+    width: calc(10000px + #{$split-width});
+    background: $primary-color;
+  }
+
+  &.split-secondary::before {
+    background: $secondary-color;
+  }
+
+  &.split-tertiary::before {
+    background: $tertiary-color;
+  }
+
+  &.split-alt::before {
+    background: $alt-color;
+  }
+
+  &.split-right::before {
+    left: auto;
+    right: -10000px;
+  }
+
+  &.split-wide::before {
+    width: calc(10000px + 70%);
+  }
+
+  >:is(h1, h2):first-child {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: $split-width;
+    height: 100%;
+    margin: 0;
+    padding: $split-pad;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    color: $white;
+    font-family: $presentation-heading-font;
+    font-size: 1.7em;
+    font-weight: $presentation-heading-font-weight;
+    line-height: 1.15;
+    text-align: $presentation-slide-text-align;
+    text-shadow: none;
+  }
+
+  &.split-right>:is(h1, h2):first-child {
+    left: auto;
+    right: 0;
+  }
+
+  &.split-wide>:is(h1, h2):first-child {
+    width: 70%;
+  }
+
+  // Centred (default) suits a bare divider; .split-top aligns the title to
+  // the top instead, level with body content, for a title+content slide.
+  &.split-top>:is(h1, h2):first-child {
+    align-items: flex-start;
+    padding-top: $split-pad;
+  }
+
+  >:not(h2) {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+.reveal .slides section.split:not(.split-right) {
+  padding-left: calc(#{$split-width} + #{$split-pad}) !important;
+  padding-right: $slide-pad-x !important;
+}
+
+.reveal .slides section.split.split-right {
+  padding-left: $slide-pad-x !important;
+  padding-right: calc(#{$split-width} + #{$split-pad}) !important;
+}
+
+.reveal .slides section.split.split-wide:not(.split-right) {
+  padding-left: calc(70% + #{$split-pad}) !important;
+}
+
+.reveal .slides section.split.split-wide.split-right {
+  padding-right: calc(70% + #{$split-pad}) !important;
+}
+
+// == Split, tinted content area ====================================================
+// .split-tint replaces the plain white content area with a pale tint of
+// whichever colour the panel is using - no extra colour to set, it follows
+// .split-secondary/-tertiary/-alt automatically.
+//   ## Section title {.split .split-tint}
+.reveal .slides section.split.split-tint {
+  background-color: rgba($primary-color, $split-tint-opacity);
+}
+
+.reveal .slides section.split.split-tint.split-secondary {
+  background-color: rgba($secondary-color, $split-tint-opacity);
+}
+
+.reveal .slides section.split.split-tint.split-tertiary {
+  background-color: rgba($tertiary-color, $split-tint-opacity);
+}
+
+.reveal .slides section.split.split-tint.split-alt {
+  background-color: rgba($alt-color, $split-tint-opacity);
+}
+
+// == Split, paper content card =====================================================
+// Combines the split panel with the paper card look: rather than literally
+// stacking {.split .paper} - which conflicts, .paper resizes the whole slide
+// to a 92%/86% card and .split's panel would bleed straight past its rounded
+// corners - .split-paper keeps the full-bleed colour panel and floats a
+// paper-style card in the remaining content area instead, with a top edge
+// that matches the panel's own colour.
+//   ## Section title {.split .split-paper}
+//   ## Section title {.split .split-paper .split-secondary}  (also -tertiary, -alt)
+.reveal .slides section.split.split-paper {
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: $split-card-inset;
+    bottom: $split-card-inset;
+    left: calc(#{$split-width} + #{$split-card-inset});
+    right: $split-card-inset;
+    border-radius: $paper-radius;
+    background: $paper-bg;
+    border-top: 8px solid $primary-color;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.1),
+      0 8px 24px rgba(0, 0, 0, 0.15),
+      0 16px 48px rgba(0, 0, 0, 0.1);
+  }
+
+  &.split-secondary::after {
+    border-top-color: $secondary-color;
+  }
+
+  &.split-tertiary::after {
+    border-top-color: $tertiary-color;
+  }
+
+  &.split-alt::after {
+    border-top-color: $alt-color;
+  }
+
+  &.split-right::after {
+    left: $split-card-inset;
+    right: calc(#{$split-width} + #{$split-card-inset});
+  }
+
+  &.split-wide:not(.split-right)::after {
+    left: calc(70% + #{$split-card-inset});
+  }
+
+  &.split-wide.split-right::after {
+    right: calc(70% + #{$split-card-inset});
+  }
+}
+
+.reveal .slides section.split.split-paper:not(.split-right) {
+  padding: calc(#{$split-card-inset} + #{$paper-pad}) calc(#{$split-card-inset} + #{$paper-pad})
+    calc(#{$split-card-inset} + #{$paper-pad}) calc(#{$split-width} + #{$split-card-inset} + #{$paper-pad}) !important;
+}
+
+.reveal .slides section.split.split-paper.split-right {
+  padding: calc(#{$split-card-inset} + #{$paper-pad}) calc(#{$split-width} + #{$split-card-inset} + #{$paper-pad})
+    calc(#{$split-card-inset} + #{$paper-pad}) calc(#{$split-card-inset} + #{$paper-pad}) !important;
+}
+
+.reveal .slides section.split.split-paper.split-wide:not(.split-right) {
+  padding-left: calc(70% + #{$split-card-inset} + #{$paper-pad}) !important;
+}
+
+.reveal .slides section.split.split-paper.split-wide.split-right {
+  padding-right: calc(70% + #{$split-card-inset} + #{$paper-pad}) !important;
+}
+
+// .split-paper's title still sits in the panel, same as a plain .split -
+// only the h1/h2 "first child in the panel" rule is relevant, and that is
+// untouched above. The card itself never needs the dark-background text fix
+// .paper uses, since its colour comes from our own CSS, not a slide
+// `background-color`; it is included below only so a {background-color=...}
+// added on top of .split-paper for extra effect still reads correctly.
+
+// == Theme-swappable text highlights ==========================================
+// .hl-1 ... .hl-5        coloured bold text
+// .hl-1-bg ... .hl-5-bg  filled pill
+// Their colours come from $highlight-1..5, so a variant re-colours them all.
+// (The older named classes above - .red_bold, .navy_bold, ... - are literal
+// University palette colours and never change.)
+$highlight-colors: ($highlight-1, $highlight-2, $highlight-3, $highlight-4, $highlight-5);
+$highlight-fgs: ($highlight-fg-1, $highlight-fg-2, $highlight-fg-3, $highlight-fg-4, $highlight-fg-5);
+
+@for $i from 1 through 5 {
+  .hl-#{$i} {
+    color: nth($highlight-colors, $i);
+    font-weight: bold;
+  }
+
+  .hl-#{$i}-bg {
+    color: nth($highlight-fgs, $i);
+    background-color: nth($highlight-colors, $i);
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    border-radius: 5px;
+    display: inline-block;
+  }
+}
+
+// == Reveal base ===============================================================
+.reveal {
+  font-weight: $body-font-weight !important;
+}
+
+// == Title bar & slide layout ===================================================
+//
+// Everything below lives in Reveal's 1920x1080 design space, so it scales
+// with the slides automatically. The bar is a single pseudo-element on
+// `.slides` that is deliberately far wider/taller than the slide box; the
+// `.reveal` container clips it. Result: the bar always spans the full window,
+// whatever the aspect ratio, with no coloured letter-box borders, and it stays
+// still while slides slide past it.
+
+$bar-gradient: linear-gradient(to bottom,
+    $bar-bg 0,
+    $bar-bg calc(100% - #{$bar-stripe}),
+    $bar-line-color calc(100% - #{$bar-stripe}),
+    $bar-line-color 100%);
+
+// Which slides get a bar: every real content slide. Title slide and
+// level-1 section slides carry `.title-slide`; add `.no-title-bar` to any
+// other slide that should be bar-less.
+$bar-slide: "section.slide:not(.title-slide):not(.no-title-bar):not(.paper):not(.split)";
+
+.reveal .slides::before {
+  content: "";
+  position: absolute;
+  left: -10000px;
+  right: -10000px;
+  top: -10000px;
+  height: calc(10000px + #{$bar-total});
+  background: $bar-gradient;
+  pointer-events: none;
+}
+
+// No bar while a title / section / .no-title-bar slide is showing.
+.reveal:has(.slides section.present:is(.title-slide, #title-slide, .no-title-bar, .paper, .split)) .slides::before {
+  display: none;
+}
+
+// Side padding for every slide (the title slide has an id but no .slide class),
+// extra top padding on bar slides to clear the bar.
+.reveal .slides section.slide,
+.reveal .slides section#title-slide {
+  box-sizing: border-box;
+  padding-left: $slide-pad-x;
+  padding-right: $slide-pad-x;
+}
+
+.reveal .slides #{$bar-slide} {
+  padding-top: $content-top;
+}
+
+// The slide's own <h2> *is* the title in the bar (no JS copying needed).
+.reveal .slides #{$bar-slide}>h2:first-child {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: $slide-pad-x;
+  right: $logo-reserve;
+  height: $bar-height;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center; // vertically centred in the blue part of the bar
+  color: $white;
+  font-family: $presentation-heading-font;
+  // Sized from the root font size, NOT em: classes like .smaller shrink a
+  // slide's own font-size and would otherwise shrink the title with it.
+  font-size: calc(var(--r-main-font-size, #{$presentation-font-size-root}) * #{$bar-title-scale});
+  font-weight: $presentation-heading-font-weight;
+  line-height: 1.05;
+  text-align: $presentation-slide-text-align;
+  text-transform: none;
+  text-shadow: none;
+}
+
+// Overview mode and PDF export do not use the shared bar; give each slide
+// its own so thumbnails / pages look right.
+.reveal.overview .slides::before,
+.reveal-print .reveal .slides::before,
+.print-pdf .reveal .slides::before {
+  display: none;
+}
+
+.reveal.overview .slides #{$bar-slide},
+.reveal-print .reveal .slides #{$bar-slide},
+.print-pdf .reveal .slides #{$bar-slide} {
+  // (a background, not ::before - Reveal reserves ::before/::after on
+  // overview slides)
+  background-image: $bar-gradient;
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-size: 100% $bar-total;
+}
+
+// Reveal's print stylesheet zeroes section padding; put ours back for PDF export.
+.reveal-print .reveal .slides section.slide,
+.reveal-print .reveal .slides section#title-slide,
+.print-pdf .reveal .slides section.slide,
+.print-pdf .reveal .slides section#title-slide {
+  box-sizing: border-box !important;
+  padding-left: $slide-pad-x !important;
+  padding-right: $slide-pad-x !important;
+}
+
+.reveal-print .reveal .slides #{$bar-slide},
+.print-pdf .reveal .slides #{$bar-slide} {
+  padding-top: $content-top !important;
+}
+
+// Window-fixed chrome makes no sense over the overview grid.
+.reveal.overview .slide-logo,
+.reveal.overview .footer,
+body:has(.reveal.overview) .persistent-footer {
+  display: none !important;
+}
+
+// Level 1 headers (section dividers)
+.reveal .slides section.level1>h1 {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+// title and headings
+
+// Quarto's own .center class (applied automatically) centres this section
+// by leaving it shrink-wrapped to its own content and centring that smaller
+// box within the slide - the same trick a bare level-1 heading relies on
+// (see the transition-slide notes above). That leaves the section itself
+// far shorter than the full 1920x1080 design space, which breaks anything
+// positioned absolutely within it (the watermark, the QR code box) relative
+// to the section's own edges rather than the slide's. Fixed the same way as
+// .split and .transition-slide-*: force the section to the full height and
+// recreate the centring internally with flex, rather than relying on
+// Quarto's outer shrink-and-centre trick.
+#title-slide {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  height: 100% !important;
+  box-sizing: border-box;
+  text-align: left;
+
+  .title {
+    color: $primary-color;
+    font-size: 1.6em;
+    width: 90%;
+    margin-left: 0px !important; // Align with red line
+    // font-weight: 350;
+  }
+
+  .subtitle {
+    color: $primary-color;
+    font-style: italic;
+    font-size: 1.15em;
+    margin-top: 0em;
+    margin-bottom: 1.5rem;
+    margin-left: 0px !important; // Align with red line
+    font-weight: 500;
+  }
+
+  .institute,
+  .quarto-title-affiliation,
+  .quarto-title-author-email {
+    font-style: italic;
+    // font-size: 80%;
+    // color: #7F7F7F;
+  }
+
+  .quarto-title-authors {
+    padding-top: 20px;
+    margin-top: 2rem;
+    margin-bottom: 3.5rem;
+    border-top: 4px $titleSlide-line $secondary-color;
+    display: flex;
+    justify-content: left;
+
+    margin-left: 0px !important; // Extend full width under title
+    margin-right: 0px !important;
+
+    .quarto-title-author {
+      padding-left: 0em !important;
+      padding-right: clamp(40px, $authors-block-gap, 150px) !important;
+      // width: fit-content;
+      width: 100%;
+    }
+  }
+
+  .author,
+  .quarto-title-author-name {
+    color: $body-color;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+  }
+
+  .date {
+    text-align: center !important; // Center the date
+    width: 100% !important;
+    margin-top: 2em !important;
+    font-style: italic;
+  }
+}
+
+// `event:` - no equivalent in Quarto's own title-block template, inserted
+// at runtime right before .date (see uoe-scripts.html). Matches .date's own
+// position/colour/size; a little bolder, to read as a label above it.
+#uoe-event {
+  text-align: center;
+  width: 100%;
+  margin: 2em 0 0 0;
+  color: $body-color;
+  font-weight: 600;
+  font-size: 1em;
+}
+
+// When .date sits right after it, tighten the gap between the two and let
+// .date's own top margin go instead.
+#uoe-event + .date {
+  margin-top: 0.3em !important;
+}
+
+// == Title slide style ============================================================
+// Set per-document with `title-style:` in YAML - `watermark` (default),
+// `colour`, or `plain`. Applied at runtime (see uoe-scripts.html) as a class
+// on #title-slide, since the title slide's own markup is generated by
+// Quarto's template rather than written by hand, so there is nothing for a
+// Lua filter to attach a class to directly.
+// The watermark reuses whatever image is set as `logo:` by default, or
+// `title-watermark-image:` if given - set with .style.backgroundImage on a
+// real element inserted by uoe-scripts.html, not a path written here or
+// held in a CSS custom property. Both of those resolve a url() against the
+// *stylesheet* that ends up using it - the compiled CSS file, several
+// directories deep inside libs/revealjs/dist/theme/ once Quarto builds it -
+// not against the page, even when the variable itself was set from the
+// page; only a background set directly via an element's own inline style
+// resolves against the page, the same way an <img src> does.
+$title-watermark-opacity: 0.08 !default;
+$title-watermark-size: 38% !default; // overridden inline when title-watermark-size: is set
+$title-watermark-inset: 70px !default; // gap kept from the right edge
+$title-watermark-vpos: 35% !default; // vertical anchor, biased toward the top
+                                      // (titles/authors are left-aligned, so the
+                                      // top-right corner reads as the natural spot)
+
+#title-slide.uoe-title-watermark {
+  overflow: hidden;
+}
+
+// Vertically centred on the slide and inset from the right edge (rather
+// than bleeding past it, as the title bar and coloured background do) -
+// keeps clear of the QR code box, which sits in the same corner.
+#uoe-watermark {
+  position: absolute;
+  z-index: -1;
+  top: $title-watermark-vpos;
+  right: $title-watermark-inset;
+  transform: translateY(-50%);
+  width: $title-watermark-size;
+  height: 60%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center right;
+  opacity: $title-watermark-opacity;
+  pointer-events: none;
+}
+
+#title-slide.uoe-title-colour {
+  // Bleeds past the slide's own edges, clipped only by .reveal{overflow:
+  // hidden} - the same trick the title bar and the .split panel use. A
+  // plain background-color here would be confined to the slide's own
+  // 1920x1080 design-space box, which only matches the true window size
+  // when the window happens to be exactly 16:9; any other aspect ratio
+  // (a 1920x1200 or 4:3 screen, especially noticeable in fullscreen) would
+  // otherwise leave a visible band of the page's plain white background
+  // below (or beside) the coloured slide.
+  &::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -10000px;
+    right: -10000px;
+    bottom: -10000px;
+    left: -10000px;
+    background-color: $alt-color;
+  }
+
+  .title,
+  .subtitle {
+    color: $white;
+  }
+
+  .author,
+  .quarto-title-author-name,
+  .date,
+  .institute,
+  .quarto-title-affiliation,
+  .quarto-title-author-email {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  // #uoe-event is inserted as a child of #title-slide by uoe-scripts.html
+  // (see the notes by its base rule, further down) rather than written in
+  // the markup, so it isn't reachable by the class-based selector above -
+  // missing this the first time round is exactly why it was unreadable
+  // against this background.
+  #uoe-event {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .quarto-title-authors {
+    border-top-color: $secondary-color;
+  }
+}
+
+// == QR code (title slide) ========================================================
+// Set `qrcode: "<url>"` in YAML to show a QR code in the lower-right of the
+// title slide (optionally `qrcode-caption:` and `qrcode-size:`, a design-px
+// side length - default below). Rendered at runtime from a vendored,
+// dependency-free JS library (js/qrcode.min.js, MIT, kazuhikoarase) - see
+// uoe-scripts.html - so nothing is generated at render time and the slides
+// stay usable offline. Left plain black-on-white rather than themed, since
+// a recoloured QR code scans less reliably on some readers.
+$qrcode-size: 150px !default;
+
+// Specificity note: #title-slide.uoe-title-watermark > * (used to lift real
+// content above the decorative watermark) is ID+class, which beats a plain
+// ID alone - #title-slide #uoe-qrcode-box (double ID) is needed here so this
+// box's own absolute positioning isn't overridden back to that rule's
+// `position: relative`.
+#title-slide #uoe-qrcode-box {
+  position: absolute;
+  z-index: 2;
+  right: calc(#{$slide-pad-x} + 50px + var(--uoe-qrcode-offset-x, 0px));
+  bottom: calc(135px + var(--uoe-qrcode-offset-y, 0px));
+  width: $qrcode-size;
+  text-align: center;
+
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.uoe-qrcode-caption {
+  margin-top: 0.5em;
+  font-size: 0.6em;
+  color: $body-fg-color;
+}
+
+#title-slide.uoe-title-colour .uoe-qrcode-caption {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+
+// == Updated Callout System ==
+.reveal .callout {
+  margin-left: 20px !important;
+  margin-right: 20px !important;
+  border: 1px solid #dee2e6 !important;
+  border-left-width: 6px !important;
+  border-radius: .25rem !important;
+  background-color: white !important;
+}
+
+.reveal .callout .callout-body {
+  padding: 0rem 0rem;
+  background-color: #f8f9fa;
+}
+
+.reveal .callout .callout-title {
+  padding: .5rem 1rem;
+  margin: 0;
+  background-color: #f8f9fa;
+}
+
+.reveal .callout .callout-content {
+  padding: 0 1rem 1rem 1rem;
+}
+
+// Maintain callout color coding
+.reveal .callout.callout-warning {
+  border-left-color: #ffc107 !important;
+}
+
+.reveal .callout.callout-note {
+  border-left-color: #0d6efd !important;
+}
+
+.reveal .callout.callout-important {
+  border-left-color: #dc3545 !important;
+}
+
+.reveal .callout.callout-tip {
+  border-left-color: #198754 !important;
+}
+
+.reveal .callout.callout-caution {
+  border-left-color: #fd7e14 !important;
+}
+
+// == Updated Column System ==
+.reveal .slides .columns {
+  display: flex !important;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+// Layouts made with the .cols-1-2 style aliases (see columns.lua): ratios come
+// from flex-grow, so use a gap instead of padding to keep them exact.
+.reveal .slides .columns.uoe-cols {
+  gap: 1.5em;
+
+  >.column {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  &.cols-center {
+    align-items: center;
+  }
+
+  &.cols-bottom {
+    align-items: flex-end;
+  }
+}
+
+// Whatever follows a column block (e.g. a full-width caption) needs air.
+.reveal .slides .columns+* {
+  margin-top: 0.9em !important;
+}
+
+.reveal .slides .column {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.reveal .slides .column:first-child {
+  padding-left: 0;
+}
+
+.reveal .slides .column:last-child {
+  padding-right: 0;
+}
+
+// == Window-anchored chrome ======================================================
+// Logo, slide number and footers are fixed to the window (Reveal does not
+// transform them), so their sizes use ui() to follow the slide scale, and
+// --uoe-x (the gap between window edge and slide box, set by the script in
+// uoe-scripts.html) to line up with the bar on wide screens.
+
+// Hide the logo wherever the bar is hidden.
+body:has(.reveal .slides section.present:is(.title-slide, #title-slide, .no-title-bar, .paper, .split)) .slide-logo {
+  visibility: hidden;
+}
+
+// Top-right logo, sits inside the bar.
+.slide-logo {
+  display: block !important;
+  position: fixed !important;
+  top: 0 !important;
+  right: calc(var(--uoe-x, 0px) + #{ui(10px)}) !important;
+  height: ui($bar-height) !important;
+  max-height: ui($bar-height) !important;
+  width: auto !important;
+  margin: 0 !important;
+  color: $body-color !important;
+  z-index: 1002;
+}
+
+// No slide number on the title slide
+body:has(section#title-slide.present) .slide-number,
+body:has(section#title-slide.present) .reveal.has-logo .slide-number {
+  display: none !important;
+}
+
+// == Footer ====================================================================
+.reveal .footer {
+  padding-right: ui(100px) !important;
+  color: $body-fg-color !important;
+
+  p {
+    font-size: max(#{ui(22px)}, 11px) !important;
+  }
+
+  p, span, div {
+    color: $body-fg-color !important;
+  }
+
+  a {
+    color: $link-color !important;
+    text-decoration: none !important;
+
+    &:hover {
+      color: $hover-color !important;
+      text-decoration: underline !important;
+    }
+  }
+}
+
+.reveal .footer-logo-container {
+  position: fixed;
+  right: ui(25px);
+  bottom: calc(#{$progress-height} + #{ui(3px)});
+  z-index: 450;
+}
+
+.reveal .footer-logo {
+  height: ui(80px);
+  max-height: ui(80px);
+  width: auto;
+  margin: 3px 16px;
+}
+
+// Persistent footer (injected by footer-logo.lua)
+.persistent-footer {
+  position: fixed !important;
+  bottom: calc(#{$progress-height} + #{ui(3px)}) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 500 !important;
+
+  font-size: max(#{ui(16px)}, 10px) !important;
+  font-weight: 400 !important;
+  padding: 2px 15px !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  max-width: 90% !important;
+  pointer-events: auto !important;
+
+  &, * {
+    color: $body-fg-color !important;
+  }
+
+  a {
+    color: $link-color !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease !important;
+
+    &:hover {
+      color: $hover-color !important;
+      text-decoration: underline !important;
+    }
+
+    &:visited {
+      color: $link-visited-color !important;
+    }
+  }
+}
+
+// Let very narrow windows wrap the footer
+@media (max-width: 768px) {
+  .persistent-footer {
+    white-space: normal !important;
+    max-width: 80% !important;
+  }
+}
+
+// Default (Quarto) footer sits just above the persistent footer
+body:has(.persistent-footer) .reveal .footer {
+  bottom: calc(#{$progress-height} + max(#{ui(30px)}, 20px)) !important;
+  z-index: 400 !important;
+}
+
+body:has(section#title-slide.present) .persistent-footer {
+  display: none !important;
+}
+
+// A slide with its own dark/bright background (e.g. {background-color=...},
+// used with .paper-accent above) needs a lighter footer to stay readable.
+.reveal.has-dark-background .footer,
+body:has(.reveal .slides section.present.has-dark-background) .persistent-footer {
+
+  &, p, span, div {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  a {
+    color: $white !important;
+
+    &:hover {
+      color: $hover-color !important;
+    }
+  }
+}
+
+// .transition-slide-* dark variants need the same treatment, but since their
+// colour comes from our own CSS rather than Reveal's background mechanism,
+// `.has-dark-background` is never set for them - spelled out explicitly for
+// the same set of dark-background names used above, via :has() (works
+// without relying on a class landing on any particular ancestor).
+$transition-dark-names: "primary", "secondary", "tertiary", "alt",
+  "bright-blue", "bright-pink", "bright-red",
+  "eng-blue", "eng-green", "eng-teal",
+  "edteal", "edblue", "edgreen", "ednavy";
+$transition-dark-selector: "";
+@each $name in $transition-dark-names {
+  $transition-dark-selector: if($transition-dark-selector == "",
+    ".transition-slide-#{$name}",
+    "#{$transition-dark-selector}, .transition-slide-#{$name}");
+}
+
+body:has(.reveal .slides section.present:is(#{$transition-dark-selector})) .footer,
+body:has(.reveal .slides section.present:is(#{$transition-dark-selector})) .persistent-footer,
+body:has(#title-slide.uoe-title-colour) .footer,
+body:has(#title-slide.uoe-title-colour) .persistent-footer {
+
+  &, p, span, div {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  a {
+    color: $white !important;
+
+    &:hover {
+      color: $hover-color !important;
+    }
+  }
+}
+
+// == Slide number tab ============================================================
+.slide-number,
+.reveal.has-logo .slide-number {
+  position: fixed;
+  top: ui(160px) !important;
+  bottom: auto !important;
+  right: -4px !important; // tab flush with the window edge
+  font-size: ui(24px) !important;
+  font-weight: 600;
+  color: #fafafa;
+  background: $number-tab-bg !important;
+  border-radius: 6px 0 0 6px !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 3px solid $number-tab-line !important;
+  border-right: none !important;
+  padding: ui(6px) ui(12px) ui(6px) ui(10px) !important;
+  min-width: ui(30px) !important;
+  max-width: fit-content;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  text-align: center;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateX(-4px);
+    box-shadow:
+      0 6px 16px rgba(0, 0, 0, 0.4),
+      0 3px 6px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+// == Final Polish: Control Icon Alignment ==
+// This targets the container for the bottom-left controls and forces
+// all items inside (menu, chalkboard, etc.) to be vertically centered.
+.reveal .slide-chalkboard-buttons.slide-menu-offset {
+  bottom: 15px !important;
+  color: $secondary-color !important;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.reveal .slide-chalkboard-buttons>* {
+  pointer-events: auto;
+}
+
+html body .reveal .slide-menu-button {
+  position: fixed;
+  bottom: 15px !important;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  pointer-events: none;
+  color: $secondary-color !important;
+}
+
+html body .reveal .slide-menu-button>* {
+  pointer-events: auto;
+}
+
+// More specific targeting for menu and chalkboard buttons
+// == Menu and Chalkboard Button Styling ==
+// Target the menu button and chalkboard buttons with high specificity
+
+// Base styling for all menu/chalkboard buttons
+.reveal .slide-menu-button,
+.reveal .slide-chalkboard-buttons {
+  a {
+    color: $secondary-color !important;
+    
+    // Target Font Awesome icons specifically
+    i, .fa {
+      color: $secondary-color !important;
+      
+      &::before {
+        color: $secondary-color !important;
+      }
+    }
+    
+    // Hover states
+    &:hover {
+      color: $hover-color !important;
+      
+      i, .fa {
+        color: $hover-color !important;
+        
+        &::before {
+          color: $hover-color !important;
+        }
+      }
+    }
+  }
+}
+
+// More specific targeting for individual button types
+.reveal .slide-menu-button a {
+  // Override any inherited styles
+  --r-link-color: #{$secondary-color};
+  --r-link-color-hover: #{$hover-color};
+  
+  color: $secondary-color !important;
+  
+  .fa-bars,
+  i[class*="fa-"] {
+    &::before {
+      color: $secondary-color !important;
+    }
+  }
+  
+  &:hover {
+    color: $hover-color !important;
+    
+    .fa-bars,
+    i[class*="fa-"] {
+      &::before {
+        color: $hover-color !important;
+      }
+    }
+  }
+}
+
+.reveal .slide-chalkboard-buttons a {
+  // Override any inherited styles
+  --r-link-color: #{$secondary-color};
+  --r-link-color-hover: #{$hover-color};
+  
+  color: $secondary-color !important;
+  
+  .fa-pen,
+  .fa-brush,
+  i[class*="fa-"] {
+    &::before {
+      color: $secondary-color !important;
+    }
+  }
+  
+  &:hover {
+    color: $hover-color !important;
+    
+    .fa-pen,
+    .fa-brush,
+    i[class*="fa-"] {
+      &::before {
+        color: $hover-color !important;
+      }
+    }
+  }
+}
+
+// Additional fallback rules for any remaining styling issues
+html body .reveal {
+  .slide-menu-button,
+  .slide-chalkboard-buttons {
+    a {
+      transition: color 0.2s ease;
+      
+      &, * {
+        color: $secondary-color !important;
+      }
+      
+      &:hover {
+        &, * {
+          color: $hover-color !important;
+        }
+      }
+    }
+  }
+}
+
+// == Standard theme options ==
+// reveal title font targetted formatting
+.reveal h3 {
+  color: $accent;
+  font-style: italic;
+}
+
+.reveal h4 {
+  color: $accent2;
+  font-weight: normal;
+  margin-top: 1.25em;
+}
+
+// Progress bar
+
+.reveal .progress {
+  background: $progress-bg;
+  color: $progress-fg;
+  height: $progress-height;
+  bottom: 0 !important;
+  z-index: 300 !important; // Lowest z-index
+
+}
+
+// alerts etc.
+
+.alert {
+  color: $alert-color;
+}
+
+.fg {
+  color: var(--col, $jet);
+}
+
+.bg {
+  background-color: var(--col, #fff);
+  padding: 0.1em;
+  border-radius: 5px;
+  display: inline-block;
+}
+
+// lists
+
+// Unordered lists
+
+.reveal ul {
+  padding-left: 16px;
+  font-size: 92%;
+  margin-top: 0;
+  padding-top: 0;
+
+  li::marker {
+    color: mix($accent, white, 70%);
+  }
+}
+
+.reveal ul ul {
+  list-style: none;
+
+  li:before {
+    content: $right-arrow;
+    color: mix($accent, white, 60%);
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+    margin-right: 0.5em;
+  }
+}
+
+// Ordered lists
+
+.reveal ol {
+  // font-weight: 300;
+  // font-weight: lighter;
+  padding-left: 16px;
+  margin-top: 0;
+  margin-bottom: 0;
+
+  li::marker {
+    color: $accent;
+  }
+}
+
+.reveal ol ol {
+  font-size: 85%;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+// == Transition / section-break slides ============================================
+// A full-bleed coloured slide with a large, centred title (and, optionally,
+// a centred subtitle) - no title bar, no logo, same treatment any
+// `# Heading {.transition-slide-xxx}` level-1 slide already gets for free
+// (Quarto marks every level-1 slide `.title-slide`, which this theme already
+// excludes from the bar/logo).
+//
+//   # Section title {.transition-slide-bright-blue}
+//
+//   Optional subtitle text as a plain paragraph right under the title (not
+//   a heading - a `##`/`###` here would start a new slide instead).
+//
+// Colour is one class away: role colours (primary/secondary/tertiary/alt),
+// the five University "bright" accents, the five School of Engineering
+// colours, and the original edgold/edteal/edblue/edgreen/ednavy picks are
+// all available; text colour (white or dark) is chosen to stay readable
+// against each one automatically.
+$transition-slide-colors: (
+  "primary": $primary-color,
+  "secondary": $secondary-color,
+  "tertiary": $tertiary-color,
+  "alt": $alt-color,
+  "bright-blue": $university_bright_blue,
+  "bright-pink": $university_bright_pink,
+  "bright-red": $university_bright_red,
+  "bright-yellow": $university_bright_yellow,
+  "eng-blue": $eng_blue,
+  "eng-green": $eng_green,
+  "eng-yellow": $eng_yellow,
+  "eng-teal": $eng_teal,
+  "eng-lightgreen": $eng_lightgreen,
+  // kept for decks already using these (pre-dates the role/bright/eng system)
+  "edgold": $hover-color,
+  "edteal": $university_bright_blue,
+  "edblue": $university_muted_blue,
+  "edgreen": $university_dark_green,
+  "ednavy": $university_blue,
+);
+// Light backgrounds in the map above - these get dark text instead of white,
+// and keep the default (already-dark) footer text rather than the
+// light-footer override every other variant below gets.
+$transition-slide-light-bg: "bright-yellow", "eng-yellow", "eng-lightgreen", "edgold";
+
+.reveal .transition-slide {
+  background-color: #ffffff;
+}
+
+@each $name, $color in $transition-slide-colors {
+  .reveal .transition-slide-#{$name} {
+    background-color: $color;
+  }
+}
+
+// Structural layout: every variant above, plus the plain .transition-slide,
+// gets the same centred treatment - only the colour differs between them.
+.reveal .slides section.transition-slide,
+.reveal .slides section[class*="transition-slide-"] {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100% !important;
+  box-sizing: border-box;
+  padding: 0 $slide-pad-x;
+  color: $white;
+
+  >h1 {
+    margin: 0;
+    font-size: 3em;
+    font-weight: $presentation-heading-font-weight;
+    line-height: 1.1;
+    color: inherit;
+  }
+
+  // The first paragraph under the title reads as a subtitle - smaller,
+  // lighter, still centred, with a little room above it.
+  >p:first-of-type {
+    margin: 0.6em 0 0 0;
+    font-size: 1.3em;
+    font-weight: 300;
+    opacity: 0.85;
+    max-width: 70%;
+    color: inherit;
+  }
+}
+
+// The bare (legacy) .transition-slide is white, same as the light-bg
+// variants below - also needs dark text, not the structural rule's default
+// white (which would otherwise be invisible on it).
+.reveal .slides section.transition-slide {
+  color: $jet;
+}
+
+@each $name in $transition-slide-light-bg {
+  .reveal .slides section.transition-slide-#{$name} {
+    color: $jet;
+  }
+}
+
+// Footer text needs to go light on every dark variant (the light-background
+// ones - yellows - keep the default dark footer text, already correct).
+// These classes don't go through Reveal's own background-color mechanism
+// (`has-dark-background`, used elsewhere in this file for .paper-accent),
+// since the colour here comes from our own CSS, so it needs the same
+// override spelled out explicitly rather than relying on that detection.
+.reveal .footer,
+body:has(.reveal .slides section.present) .persistent-footer {
+
+  &:is([class*="has-footer-light-text"]) {
+    // placeholder removed below - see the generated selector instead
+  }
+}
+
+
+// Beamer-style button link environment
+
+.button {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: $accent;
+  border: 1px solid $accent;
+  color: #fff !important;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+.button:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.button::before {
+  content: "▶";
+  margin-right: 5px;
+}
+
+// tables
+
+.reveal table {
+  // height: auto; /* Adjust table width to fit content up to the available slide space */
+  margin: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: 0.8em;
+}
+
+.reveal table th,
+.reveal table td {
+  border: none;
+  /* Remove internal row lines */
+  padding: .23em;
+  /* Adjust padding as needed */
+  text-align: left;
+  /* Adjust text alignment as needed */
+  font-weight: lighter;
+  /* Lighter font weight for main table text */
+}
+
+/* Adds a bottom border to the table header row for distinction */
+.reveal table thead th,
+.reveal .slides table tr:last-child td,
+.reveal .slides table {
+  border-bottom: 2px solid #D3D3D3;
+  /* Dark grey color for the bottom border */
+}
+
+/* Make column headers bold */
+.reveal table thead th {
+  font-weight: bold;
+}
+
+/* Styling table captions */
+.reveal table caption {
+  color: #666666;
+  /* Dark grey color for the caption */
+  font-variant: small-caps;
+  /* Use small caps for the caption text */
+}
+
+// Special catch for etable environment to ensure these table images
+// don't overflow the slide.
+// See: https://lrberge.github.io/fixest/articles/etable_new_features.html
+
+.etable {
+  width: 100%;
+  height: calc(100% - 3em);
+  /* Adjust 3em based on the height of your header, if necessary */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.etable img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+// Change the relative widths of `output-location: column`. 
+// See: https://github.com/grantmcdermott/quarto-revealjs-clean/pull/16
+// Example usage:
+// ```{python}
+// #| echo: true
+// #| output-location: column
+// #| classes: columns3070
+// <code>
+// ```
+.reveal .columns3070>div.column:first-child {
+  width: 30%;
+}
+
+.reveal .columns3070 div.column:not(:first-child) {
+  width: 70%;
+}
+
+.reveal .columns7030>div.column:first-child {
+  width: 70%;
+}
+
+.reveal .columns7030 div.column:not(:first-child) {
+  width: 30%;
+}
+
+.reveal .columns4060>div.column:first-child {
+  width: 40%;
+}
+
+.reveal .columns4060 div.column:not(:first-child) {
+  width: 60%;
+}
+
+.reveal .columns6040>div.column:first-child {
+  width: 60%;
+}
+
+.reveal .columns6040 div.column:not(:first-child) {
+  width: 40%;
+}
+
+// Reduce space between display equation
+
+.reveal p:has(> .math.display) {
+  margin-bottom: -0.5em;
+}
+
+.reveal figcaption {
+  margin-top: -0.2em;
+  //margin-bottom: -0.2em;
+}
+
+.reveal aside {
+  position: absolute;
+  top: 650px;
+  left: 25px;
+  color: $body-fg-color !important;
+  font-size: 0.8em !important; // Smaller footnote text
+  font-style: italic !important;
+  margin-top: 2em !important;
+
+  // Ensure text elements don't inherit link colors
+  p,
+  span,
+  div {
+    color: $body-fg-color !important;
+  }
+
+  // Only actual links should be colored
+  a {
+    color: $link-color !important;
+    text-decoration: none !important;
+
+    &:hover {
+      color: $hover-color !important;
+      text-decoration: underline !important;
+    }
+  }
+}
+
+.reveal blockquote {
+  margin-bottom: -0.25em
+}
+
+.reveal .slide blockquote {
+  border-left: 3px solid $quote-line-color;
+}
+
+.small-text {
+  font-size: 0.6em;
+  margin-top: -5px;
+}
+
+.cell-output-display p {
+  margin-bottom: 0px;
+}
+
+.cell {
+  margin-bottom: 0;
+  /* Removes any bottom margin on the .cell, reducing space below it */
+}
+
+.cell-output-display p,
+.column>p:first-of-type {
+  margin-bottom: 0;
+  /* Remove the space below the <p> inside .cell-output-display and the first <p> in .column */
+}
+
+.column>p:not(:first-of-type) {
+  margin-top: 0;
+  /* Remove the space above all <p> elements in .column except the first one */
+}
+
+// Too much space after figures
+
+div.quarto-figure.quarto-figure-center {
+  margin: 0 !important;
+  /* '0' eliminates the margin, and '!important' ensures this rule takes precedence */
+}
+
+// slide overview formatting
+.reveal.overview .slides section.present {
+  outline: 10px solid rgba(150, 150, 150, .4);
+  outline-offset: 10px;
+  outline-color: $overview-outline-color;
+  outline-width: 25px;
+}
+
+.reveal.overview .slides section:hover {
+  outline: 8px solid rgba(150, 150, 150, .4);
+  outline-offset: 10px;
+  outline-color: $hover-color;
+  outline-width: 25px;
+}
+
+// Style the navigation controls
+// Style the navigation controls
+html body .reveal .controls {
+  transform: scale(0.425) !important;
+}
+
+html body .reveal .controls-arrow {
+  color: $secondary-color !important;
+  bottom: 220px !important;
+  right: 5px !important;
+  &:hover,
+    &:focus {
+      color: $hover-color !important;
+    }
+
+}
+
+// Target individual control buttons
+html body .reveal .controls button {
+  color: $secondary-color !important;
+
+  &:hover,
+  &:focus {
+    color: $hover-color !important;
+  }
+}
