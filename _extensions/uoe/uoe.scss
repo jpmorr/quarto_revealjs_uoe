@@ -884,6 +884,33 @@ $title-watermark-vpos: 35% !default; // vertical anchor, biased toward the top
   pointer-events: none;
 }
 
+// A plain, full-opacity version of the same logo used in the title bar,
+// at the same size/position as the watermark - but fixed, not a YAML
+// option, since .uoe-title-colour only ever wants one treatment here. Not
+// shown for .uoe-title-watermark (the watermark already is this same logo,
+// just faint) or .plain.
+// Smaller than the watermark's own default size: at full opacity (unlike
+// the watermark, which can sit behind text because it's faint) this needs
+// to clear the author row outright, not just read reasonably over it, and
+// the watermark's own 38%/60% ran straight through it in testing with a
+// fairly typical 3-author layout.
+$title-accent-logo-size: 22% !default;
+$title-accent-logo-vpos: 20% !default;
+
+#uoe-title-accent-logo {
+  position: absolute;
+  z-index: -1;
+  top: $title-accent-logo-vpos;
+  right: $title-watermark-inset;
+  transform: translateY(-50%);
+  width: $title-accent-logo-size;
+  height: 35%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center right;
+  pointer-events: none;
+}
+
 #title-slide.uoe-title-colour {
   // Bleeds past the slide's own edges, clipped only by .reveal{overflow:
   // hidden} - the same trick the title bar and the .split panel use. A
