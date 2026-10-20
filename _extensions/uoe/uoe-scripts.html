@@ -171,6 +171,29 @@ function initUoe() {
 
   applyUoeTitleStyle();
   renderUoeQrcode();
+
+  if (window.uoeFooterLogoDark) {
+    updateUoeFooterLogo();
+    Reveal.on('slidechanged', updateUoeFooterLogo);
+  }
+}
+
+// The footer logo is a single element shared across every slide (added once
+// by footer-logo.lua, position: fixed), not recreated per-slide - so unlike
+// the watermark/accent-logo/QR code above, swapping its image for a dark
+// background has to happen live, each time the slide changes, rather than
+// once on load. Swaps back to the normal logo on every other slide.
+var uoeFooterLogoNormalSrc = null;
+function updateUoeFooterLogo() {
+  var logo = document.querySelector('.footer-logo');
+  if (!logo) return;
+  if (uoeFooterLogoNormalSrc === null) uoeFooterLogoNormalSrc = logo.src;
+
+  var titleSlide = document.getElementById('title-slide');
+  var onDarkBg = titleSlide && titleSlide.classList.contains('present') &&
+      titleSlide.classList.contains('uoe-title-colour');
+
+  logo.src = onDarkBg ? window.uoeFooterLogoDark : uoeFooterLogoNormalSrc;
 }
 
 // ---------------------------------------------------------------------------
@@ -218,6 +241,20 @@ function applyUoeTitleStyle() {
       titleSlide.appendChild(mark);
     } else if (!url) {
       return;
+    }
+  }
+
+  if (window.uoeTitleStyle === 'colour') {
+    // Same logo as the title bar, full-size/opacity, fixed - not a YAML
+    // option (unlike the watermark), so there's no override to check for
+    // here: just read the bar logo's already-correct <img src>, the same
+    // way the watermark falls back to it.
+    var barLogo = document.querySelector('.slide-logo');
+    if (barLogo && barLogo.src && !document.getElementById('uoe-title-accent-logo')) {
+      var accent = document.createElement('div');
+      accent.id = 'uoe-title-accent-logo';
+      accent.style.backgroundImage = 'url("' + barLogo.src + '")';
+      titleSlide.appendChild(accent);
     }
   }
 

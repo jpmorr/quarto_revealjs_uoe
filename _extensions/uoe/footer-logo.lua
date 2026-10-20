@@ -1,7 +1,13 @@
 -- footer-logo.lua
--- Options (document or extension YAML, both default to true):
+-- Options (document or extension YAML, both default to true unless noted):
 --   show-top-logo:    false  -> hide the logo in the top-right of the title bar
 --   show-footer-logo: false  -> hide the logo in the bottom-right corner
+--   footer-logo-dark: "img/alt.png"  -> swapped in for footer-logo: whenever
+--                     a dark-background slide is showing (title-style:
+--                     colour today; the footer-logo element is shared
+--                     across every slide, so this is applied live rather
+--                     than written once - see uoe-scripts.html). Optional;
+--                     footer-logo: is used everywhere if this isn't set.
 --
 -- 1. Adds a logo (optionally linked) to the default Quarto footer.
 -- 2. Builds a persistent footer bar from `footer-text`, `footer-link[-text]`
@@ -49,6 +55,12 @@ function Pandoc(doc)
   end
 
   -- 1. Footer logo -----------------------------------------------------------
+  local logo_dark = meta_str(doc, 'footer-logo-dark')
+  if logo_dark then
+    quarto.doc.include_text('after-body', '<script>window.uoeFooterLogoDark = \'' ..
+        js_escape(logo_dark) .. '\';</script>\n')
+  end
+
   local logo_path = meta_str(doc, 'footer-logo')
   if logo_path and enabled(doc, 'show-footer-logo') then
     local logo_link = meta_str(doc, 'footer-logo-link')
