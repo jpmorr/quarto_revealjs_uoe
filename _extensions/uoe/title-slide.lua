@@ -70,7 +70,7 @@ function Pandoc(doc)
       -- A placeholder shipped with the theme (img/UoE_CentredLogo_CMYK_roundel.png), 
       -- referenced the same way `logo:`/`footer-logo:`
       -- already are in _extension.yml - a path relative to the extension's
-      -- own install location (_extensions/jpmorr/uoe-revealjs/...), which is how
+      -- own install location (_extensions/jpmorr/uoe/...), which is how
       -- Quarto itself writes those two out in the compiled page, confirmed
       -- by checking the actual rendered HTML rather than assumed.
       --
@@ -83,7 +83,7 @@ function Pandoc(doc)
       -- filename and can't be known here - confirmed broken by rendering
       -- and checking the actual failed network request, not assumed
       -- correct from the file merely being copied successfully.
-      script = set_if(script, 'uoeTitleWatermarkDefault', '_extensions/jpmorr/uoe-revealjs/img/UoE_CentredLogo_CMYK_roundel.png')
+      script = set_if(script, 'uoeTitleWatermarkDefault', '_extensions/jpmorr/uoe/img/UoE_CentredLogo_CMYK_roundel.png')
     end
     script = set_if(script, 'uoeTitleWatermarkSize', meta_str(doc, 'title-watermark-size'))
     script = set_if(script, 'uoeTitleWatermarkOpacity', meta_str(doc, 'title-watermark-opacity'))
