@@ -45,6 +45,7 @@ contributes:
         - img/uoe_navy_bg.png
         - img/UoE_Centred Logo_CMYK_roundel.png
         - img/cc-by.png
+        - js/qrcode.min.js
 
       # Scripts are inlined from a file, so nothing depends on the folder
       # name the extension is installed under.
