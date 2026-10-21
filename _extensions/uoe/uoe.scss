@@ -155,7 +155,7 @@ $slide-pad-x: 50px !default; // left/right padding of every slide
 $content-top: 150px !default; // where content starts, below the bar
 $bar-title-scale: 1.4 !default; // slide-title size inside the bar, x the root font size
 $logo-reserve: 260px !default; // right-hand space kept free for the logo
-$progress-height: 1.5vh !default; // Reveal progress bar; footers sit above it
+$progress-height: 1.05vh !default; // Reveal progress bar; footers sit above it
 
 // ui(): a length that scales with the slides but is used on window-fixed
 // elements (which Reveal does not transform).
