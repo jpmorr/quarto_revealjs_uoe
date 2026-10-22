@@ -616,6 +616,23 @@ $highlight-fgs: ($highlight-fg-1, $highlight-fg-2, $highlight-fg-3, $highlight-f
   }
 }
 
+// == Positioning & Alignment ===================================================
+.spacer-top {
+  margin-top: 1.0em;
+}
+
+.spacer-top-sm {
+  margin-top: 0.5em;
+}
+
+.spacer-top-med {
+  margin-top: 1.5em;
+}
+
+.spacer-top-lg {
+  margin-top: 2.25em;
+}
+
 // == Reveal base ===============================================================
 .reveal {
   font-weight: $body-font-weight !important;
